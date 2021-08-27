@@ -1,21 +1,36 @@
+// result not found 
+document.getElementById('result-not-found').style.display = 'none'
+function resultNotFound() {
+    document.getElementById('result-not-found').style.display = 'block'
+}
 const searchFood = () => {
     const searchField = document.getElementById('search-field')
     let searchItem = searchField.value
-    searchField.value = ''
+    if (searchItem == '') {
+        resultNotFound()
+        searchField.value = ''
+    } else {
+        searchField.value = ''
+        const url = `https://www.themealdb.com/api/json/v1/1/search.php?s=${searchItem}`
+        fetch(url)
+            .then(res => res.json())
+            .then(foods => displayMeal(foods))
+    }
 
-    const url = `https://www.themealdb.com/api/json/v1/1/search.php?s=${searchItem}`
-
-    fetch(url)
-        .then(res => res.json())
-        .then(foods => displayMeal(foods))
 
 }
-let container = document.getElementById('food-container')
+
 function displayMeal(foods) {
-    foods.meals.map(food => {
-        const div = document.createElement('div');
-        div.classList.add('col')
-        div.innerHTML = `
+    let container = document.getElementById('food-container')
+    container.textContent = ''
+    // console.log();
+    if (foods.meals == null) {
+        resultNotFound();
+    } else {
+        foods.meals.map(food => {
+            const div = document.createElement('div');
+            div.classList.add('col')
+            div.innerHTML = `
         <div class="card"  style="width: 20rem;">
             <img src="${food.strMealThumb}" "  class="card-img-top" width=100;>
             <div class="card-body">
@@ -25,10 +40,12 @@ function displayMeal(foods) {
             </div>
         </div>
     `
-        container.appendChild(div)
-    })
-}
+            container.appendChild(div)
+        }
+        )
 
+    }
+}
 
 function loadID(id) {
     const url = `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`
@@ -36,11 +53,9 @@ function loadID(id) {
         .then(res => res.json())
         .then(meals => showDetails(meals))
 }
-
-
-
 function showDetails(meals) {
     let detail = document.getElementById('show-detail')
+    detail.textContent = ''
     meals.meals.map(meal => {
         const div = document.createElement('div');
         div.classList.add('card')
